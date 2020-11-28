@@ -1,11 +1,10 @@
-from fastapi import FastAPI, Header, File, Depends, APIRouter
+from fastapi import File, Depends, APIRouter
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from starlette.status import HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 
 from libs.jwt import authenticate_user, create_jwt_token
-from models import User, Author, Book
-from starlette.status import HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
-from models.jwt_user import JWTUser
+from models import User, Book
+from models.jwt import JWTUser
 
 app = APIRouter(openapi_prefix='/v1')
 oauth_schema = OAuth2PasswordBearer(tokenUrl='/token')

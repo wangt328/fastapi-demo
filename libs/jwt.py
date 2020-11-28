@@ -1,17 +1,18 @@
 from datetime import datetime, timedelta
-from typing import Set, Optional, Dict, List
+from typing import Optional, List
 
 import jwt
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
+
 from config.jwt import JWT_CONFIG
+from models.jwt import JWTUser, JWToken
 
-from models.jwt_user import JWTUser
-
-oauth_schema = OAuth2PasswordBearer(tokenUrl='/token')
+OAUTH_SCHEMA = OAuth2PasswordBearer(tokenUrl='/token')
 
 PWD_CONTEXT = CryptContext(schemes=['bcrypt'])
+
 fake_jwt_user_dict = {
     'username': 'test',
     'password': '$2b$12$W37ZSNTB.l21Y2KVcWkGe.HXVBb45bF1SHsNj4dEDqav8N6nbPlKm',
@@ -47,7 +48,7 @@ def authenticate_user(user: JWTUser) -> Optional[JWTUser]:
         return None
 
 
-def create_jwt_token(user: JWTUser) -> Dict:
+def create_jwt_token(user: JWTUser) -> JWToken:
     """
     Create JWT token for a valid user
 
@@ -60,10 +61,10 @@ def create_jwt_token(user: JWTUser) -> Dict:
         'roles': user.roles
     }
     jwt_token = jwt.encode(jwt_payload, JWT_CONFIG['private_key'], algorithm=JWT_CONFIG['algorithm'])
-    return {'token': jwt_token}
+    return JWToken(token=jwt_token)
 
 
-def check_jwt_token(token: str = Depends(oauth_schema)) -> bool:
+def check_jwt_token(token: str = Depends(OAUTH_SCHEMA)) -> bool:
     """
     Check if the JWT token is valid
 

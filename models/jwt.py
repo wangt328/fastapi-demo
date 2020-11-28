@@ -8,3 +8,7 @@ class JWTUser(BaseModel):
     password: str
     active: bool = False
     roles: List[str] = []
+
+
+class JWToken(BaseModel):
+    token: str
