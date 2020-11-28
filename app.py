@@ -6,7 +6,7 @@ from starlette.status import HTTP_200_OK
 
 # "Main" app used to set the '/' endpoint
 app = FastAPI(
-    title='Awesome Webapp Demo',
+    title='Xinhua Bookstore API - Demo',
     description='Provides API endpoints for querying bookstore data'
 )
 
