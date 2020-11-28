@@ -33,6 +33,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def authenticate_user(user: JWTUser) -> Optional[JWTUser]:
     """
     Authenticate username and password to give JWT token
+
     :param user: a JWTUser to be authenticated
     :return: None or a valid JWTUser
     """
@@ -83,6 +84,7 @@ def check_jwt_token(token: str = Depends(oauth_schema)) -> bool:
 def is_entitled(roles: List[str]) -> bool:
     """
     Check if the user is entitled to access the resource based on roles
+
     :param roles: roles associated with the user
     :return: true if the user is entitled
     """
