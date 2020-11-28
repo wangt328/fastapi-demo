@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from routes.authenticate import router as authenticate_router
 from starlette.status import HTTP_200_OK
+import uvicorn
 
 
 # "Main" app used to set the '/' endpoint
@@ -25,3 +26,8 @@ app.mount('/v1', v1_app)
 @app.get('/healthcheck', status_code=HTTP_200_OK)
 def health_check() -> str:
     return 'ok'
+
+
+# to run within the Pycharm, in cmd, run: `uvicorn app:app --reload --port 3000`
+if __name__ == "__main__":
+    uvicorn.run("app:app", host="127.0.0.1", port=5000, log_level="info")
