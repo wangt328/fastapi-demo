@@ -56,5 +56,5 @@ async def middleware(request: Request, call_next: Callable):
     response = await call_next(request)
     return response
 
-# in cmd, run: `uvicorn run:app --reload --port 3000 --log-config './bookstoreapp/config/logging.conf'`
+# in cmd, run: `uvicorn run:app --reload --port 3000 --log-config './app/config/logging.conf'`
 
