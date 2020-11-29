@@ -1,12 +1,15 @@
+import time
 from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import Optional, List, NoReturn
 
 import jwt
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
+from jwt import InvalidSignatureError
 from passlib.context import CryptContext
+from starlette.status import HTTP_403_FORBIDDEN, HTTP_401_UNAUTHORIZED
 
-from config.jwt import JWT_CONFIG
+from config.alpha import JWT_CONFIG
 from models.jwt import JWTUser, JWToken
 
 OAUTH_SCHEMA = OAuth2PasswordBearer(tokenUrl='/token')
@@ -64,22 +67,27 @@ def create_jwt_token(user: JWTUser) -> JWToken:
     return JWToken(token=jwt_token)
 
 
-def check_jwt_token(token: str = Depends(OAUTH_SCHEMA)) -> bool:
+def check_jwt_token(token: str = Depends(OAUTH_SCHEMA)) -> NoReturn:
     """
     Check if the JWT token is valid
 
     :param token: JWT token to be validated
-    :return: true if the token is valid
+    :return:
     """
-    jwt_payload = jwt.decode(token, JWT_CONFIG['private_key'], algorithm=JWT_CONFIG['algorithm'])
-    username = jwt_payload.get('sub')
-    expiration = jwt_payload.get('exp')
-    roles = jwt_payload.get('roles')
+    try:
+        jwt_payload = jwt.decode(token, JWT_CONFIG['private_key'], algorithm=JWT_CONFIG['algorithm'])
+        username = jwt_payload.get('sub')
+        expiration = jwt_payload.get('exp')
+        roles = jwt_payload.get('roles')
 
-    if datetime.utcnow() < expiration and fake_jwt_user.username == username:
-        return is_entitled(roles)
-    else:
-        return False
+        if time.time() < expiration and fake_jwt_user.username == username:
+            if not is_entitled(roles):
+                raise HTTPException(HTTP_403_FORBIDDEN)
+        else:
+            raise HTTPException(HTTP_401_UNAUTHORIZED)
+    except InvalidSignatureError:
+        print("????")
+        raise HTTPException(HTTP_401_UNAUTHORIZED)
 
 
 def is_entitled(roles: List[str]) -> bool:
@@ -90,3 +98,4 @@ def is_entitled(roles: List[str]) -> bool:
     :return: true if the user is entitled
     """
     return 'admin' in roles
+
