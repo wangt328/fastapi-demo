@@ -56,6 +56,5 @@ async def middleware(request: Request, call_next: Callable):
     response = await call_next(request)
     return response
 
-# to run within the Pycharm, 
 # in cmd, run: `uvicorn main:app --reload --port 3000 --log-config './bookstoreapp/config/logging.conf'`
 
