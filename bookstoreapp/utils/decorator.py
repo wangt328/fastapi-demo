@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def timer(fn: Callable):
-    """Timer decorator"""
+    """Timer decorator to record running time"""
     @wraps(fn)
     def wrapper(*args, **kwargs):
         start = datetime.datetime.utcnow()
