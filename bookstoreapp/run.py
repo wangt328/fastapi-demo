@@ -5,12 +5,12 @@ from fastapi import FastAPI, HTTPException, Request
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 
-from bookstoreapp.libs.jwt import check_jwt_token
-from bookstoreapp.routes.authenticate import router as authenticate_router
-from bookstoreapp.utils.decorator import timer
+from libs.jwt import check_jwt_token
+from routes.authenticate import router as authenticate_router
+from utils.decorator import timer
 
 # setup loggers
-logging.config.fileConfig('./bookstoreapp/config/logging.conf', disable_existing_loggers=False)
+logging.config.fileConfig('config/logging.conf', disable_existing_loggers=False)
 
 # get root logger. the __name__ resolve to 'main' since we are at the root of the project.
 # This will get the root logger since no logger in the configuration has this
@@ -56,5 +56,5 @@ async def middleware(request: Request, call_next: Callable):
     response = await call_next(request)
     return response
 
-# in cmd, run: `uvicorn main:app --reload --port 3000 --log-config './bookstoreapp/config/logging.conf'`
+# in cmd, run: `uvicorn run:app --reload --port 3000 --log-config './bookstoreapp/config/logging.conf'`
 

@@ -1,4 +1,3 @@
-import time
 from datetime import datetime, timedelta
 from typing import Optional, List, NoReturn
 
@@ -9,8 +8,8 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from starlette.status import HTTP_403_FORBIDDEN, HTTP_401_UNAUTHORIZED
 
-from bookstoreapp.config.alpha import JWT_CONFIG
-from bookstoreapp.models.jwt import JWTUser, JWToken
+from config.alpha import JWT_CONFIG
+from models.jwt import JWTUser, JWToken
 
 OAUTH_SCHEMA = OAuth2PasswordBearer(tokenUrl='/token')
 
