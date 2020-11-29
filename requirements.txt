@@ -3,3 +3,6 @@ fastapi==0.61.2
 starlette==0.13.6
 pydantic==1.7.2
 pyjwt==1.7.1
+databases~=0.4.1
+pymongo==3.11.1
+motor==2.3.0
