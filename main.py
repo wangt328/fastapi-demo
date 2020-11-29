@@ -1,14 +1,24 @@
+import logging.config
 from typing import Callable
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from starlette.responses import Response
-
-from libs.jwt import check_jwt_token
-from routes.authenticate import router as authenticate_router
 from starlette.status import HTTP_200_OK
-from starlette.requests import Request
 
-# "Main" app used to set the '/' endpoint
+from bookstoreapp.libs.jwt import check_jwt_token
+from bookstoreapp.routes.authenticate import router as authenticate_router
+from bookstoreapp.utils.decorator import timer
+
+# setup loggers
+logging.config.fileConfig('./bookstoreapp/config/logging.conf', disable_existing_loggers=False)
+
+# get root logger. the __name__ resolve to 'main' since we are at the root of the project.
+# This will get the root logger since no logger in the configuration has this
+# name.
+# logger = logging.getLogger(__name__)
+
+
+# 'Main' app used to set the '/' endpoint
 app = FastAPI(
     title='Xinhua Bookstore API - Demo',
     description='Provides API endpoints for querying bookstore data'
@@ -34,6 +44,7 @@ def health_check() -> str:
 
 # middleware to check access token
 @app.middleware('http')
+@timer
 async def middleware(request: Request, call_next: Callable):
     if not str(request.url).__contains__('/token'):
         jwt_token = request.headers['Authorization'].split('Bearer ')[1]
@@ -45,7 +56,6 @@ async def middleware(request: Request, call_next: Callable):
     response = await call_next(request)
     return response
 
-# to run within the Pycharm, in cmd, run: `uvicorn main:app --reload --port 3000`
-# import uvicorn
-# if __name__ == "__main__":
-#     uvicorn.run("main:app", host="127.0.0.1", port=5000, log_level="info")
+# to run within the Pycharm, 
+# in cmd, run: `uvicorn main:app --reload --port 3000 --log-config './bookstoreapp/config/logging.conf'`
+

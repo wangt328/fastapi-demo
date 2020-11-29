@@ -5,12 +5,12 @@ from typing import Optional, List, NoReturn
 import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from jwt import InvalidSignatureError
+from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from starlette.status import HTTP_403_FORBIDDEN, HTTP_401_UNAUTHORIZED
 
-from config.alpha import JWT_CONFIG
-from models.jwt import JWTUser, JWToken
+from bookstoreapp.config.alpha import JWT_CONFIG
+from bookstoreapp.models.jwt import JWTUser, JWToken
 
 OAUTH_SCHEMA = OAuth2PasswordBearer(tokenUrl='/token')
 
@@ -77,16 +77,14 @@ def check_jwt_token(token: str = Depends(OAUTH_SCHEMA)) -> NoReturn:
     try:
         jwt_payload = jwt.decode(token, JWT_CONFIG['private_key'], algorithm=JWT_CONFIG['algorithm'])
         username = jwt_payload.get('sub')
-        expiration = jwt_payload.get('exp')
         roles = jwt_payload.get('roles')
 
-        if time.time() < expiration and fake_jwt_user.username == username:
+        if fake_jwt_user.username == username:
             if not is_entitled(roles):
                 raise HTTPException(HTTP_403_FORBIDDEN)
         else:
             raise HTTPException(HTTP_401_UNAUTHORIZED)
-    except InvalidSignatureError:
-        print("????")
+    except InvalidTokenError:
         raise HTTPException(HTTP_401_UNAUTHORIZED)
 
 

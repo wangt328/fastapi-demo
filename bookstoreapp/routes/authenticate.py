@@ -2,8 +2,8 @@ from fastapi import Depends, APIRouter, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.status import HTTP_401_UNAUTHORIZED
 
-from libs.jwt import authenticate_user, create_jwt_token
-from models.jwt import JWTUser
+from bookstoreapp.libs.jwt import authenticate_user, create_jwt_token
+from bookstoreapp.models.jwt import JWTUser
 
 router = APIRouter()
 
