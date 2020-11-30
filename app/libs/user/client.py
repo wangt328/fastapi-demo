@@ -19,6 +19,9 @@ class UserClient:
     def create_user(self, user: User) -> bool:
         raise NotImplementedError
 
+    def delete_user(self, username: str) -> bool:
+        raise NotImplementedError
+
     def validate_user(self, username: str, password: str) -> Optional[User]:
         user = self.query(username)
         if (user is None) or (not self.verify_password(password, user.password)):
@@ -60,6 +63,10 @@ class MongoUserClient(UserClient):
 
         self._collection.update_one({'username': user.username}, {'$set': user.dict()}, upsert=True)
         logger.info(f'Successfully create new user with username {user.username}')
+        return True
+
+    def delete_user(self, username: str) -> bool:
+        self._collection.update_one({'username': username}, {'$set': {'active': False}}, upsert=False)
         return True
 
     @property

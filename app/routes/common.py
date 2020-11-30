@@ -12,7 +12,7 @@ router = APIRouter()
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = JWT_SERVICE.authenticate_user(form_data.username, form_data.password)
 
-    if user is None:
+    if user is None or user.active is False:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED)
 
     jwt_token = JWT_SERVICE.create_jwt_token(user)

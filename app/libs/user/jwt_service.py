@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
-from typing import Optional, List, NoReturn
+from typing import Optional, List
 
 import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
-from starlette.status import HTTP_403_FORBIDDEN, HTTP_401_UNAUTHORIZED
+from starlette.status import HTTP_401_UNAUTHORIZED
 
 from configs.alpha import JWT_CONFIG
 from libs.user.client import UserClient
@@ -21,10 +21,6 @@ class JWTService(object):
     def authenticate_user(self, username: str, password: str) -> Optional[User]:
         """
         Authenticate username and password to give JWT token
-
-        :param username: username
-        :param password: password
-        :return: None or a valid JWTUser
         """
         return self._user_client.validate_user(username, password)
 
@@ -32,9 +28,6 @@ class JWTService(object):
     def create_jwt_token(user: User) -> dict:
         """
         Create JWT token for a valid user
-
-        :param user: JWTUser
-        :return: a dictionary that contains the token string
         """
         jwt_payload = {
             'sub': user.username,
@@ -44,33 +37,18 @@ class JWTService(object):
         jwt_token = jwt.encode(jwt_payload, JWT_CONFIG['private_key'], algorithm=JWT_CONFIG['algorithm'])
         return {'access_token': jwt_token}
 
-    def check_jwt_token(self, token: str = Depends(OAUTH_SCHEMA)) -> NoReturn:
+    def check_jwt_token(self, token: str = Depends(OAUTH_SCHEMA)) -> List[str]:
         """
         Check if the JWT token is valid
-
-        :param token: JWT token to be validated
-        :return:
         """
         try:
             jwt_payload = jwt.decode(token, JWT_CONFIG['private_key'], algorithm=JWT_CONFIG['algorithm'])
             username = jwt_payload.get('sub')
             roles = jwt_payload.get('roles')
 
-            if self._user_client.query(username) is not None:
-                if not self.is_entitled(roles):
-                    raise HTTPException(HTTP_403_FORBIDDEN)
-            else:
+            if self._user_client.query(username) is None:
                 raise HTTPException(HTTP_401_UNAUTHORIZED)
+            return roles
         except InvalidTokenError:
             raise HTTPException(HTTP_401_UNAUTHORIZED)
-
-    @staticmethod
-    def is_entitled(roles: List[str]) -> bool:
-        """
-        Check if the user is entitled to access the resource based on roles
-
-        :param roles: roles associated with the user
-        :return: true if the user is entitled
-        """
-        return 'admin' in roles
 
