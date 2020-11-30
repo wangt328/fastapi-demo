@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Optional, List
 
 import pymongo
 from passlib.context import CryptContext
@@ -41,6 +41,11 @@ class UserClient:
 class MongoUserClient(UserClient):
     def __init__(self, collection: pymongo.collection):
         self._collection = collection
+
+    def list_users(self) -> List[User]:
+        cursor = self._collection.find()
+
+        return [User(**user) for user in cursor]
 
     def query(self, username: str) -> Optional[User]:
         query = {'username': {'$eq': username}}
