@@ -1,0 +1,18 @@
+
+# limit_req_zone $binary_remote_addr zone=bookstore:10m rate=2r/m;
+
+server {
+    listen 80;
+
+    server_name fastapi-demo.martintian.com;
+
+    #    location /v1/user {
+    #        limit_req zone=bookstore;
+    #        proxy_pass http://68.183.101.22:3000;
+    #    }
+
+    location / {
+        proxy_pass http://68.183.101.22:3000/;
+    }
+}
+

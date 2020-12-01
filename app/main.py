@@ -19,7 +19,8 @@ logging.config.fileConfig('configs/logging.conf', disable_existing_loggers=False
 app = FastAPI(
     title='Xinhua Bookstore API - Demo',
     description='Provides API endpoints for querying bookstore data',
-    version='1.0.0'
+    version='1.0.0',
+    docs_url=None, redoc_url=None
 )
 
 # Mounts the common used endpoints and v1 API on the main API

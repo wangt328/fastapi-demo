@@ -32,3 +32,9 @@ async def post_user_validation(username: str = Body(...), password: str = Body(.
 @router.get('/healthcheck', status_code=HTTP_200_OK, tags=['Default'])
 async def health_check() -> str:
     return 'ok'
+
+
+# welcome page
+@router.get('/', status_code=HTTP_200_OK, tags=['Default'])
+async def welcome() -> str:
+    return 'You have reached to Wang\'s website'
