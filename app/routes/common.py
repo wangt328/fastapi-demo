@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter, HTTPException
+from fastapi import Depends, APIRouter, HTTPException, Body
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_200_OK
 
@@ -17,6 +17,15 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
     jwt_token = JWT_SERVICE.create_jwt_token(user)
     return jwt_token
+
+
+# /login endpoint
+@router.post('/login', tags=['User'])
+async def post_user_validation(username: str = Body(...), password: str = Body(...)):
+    if JWT_SERVICE.authenticate_user(username, password) is None:
+        return {'is_valid': False}
+    else:
+        return {'is_valid': True}
 
 
 # /heathcheck endpoint

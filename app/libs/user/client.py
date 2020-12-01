@@ -24,7 +24,7 @@ class UserClient:
 
     def validate_user(self, username: str, password: str) -> Optional[User]:
         user = self.query(username)
-        if (user is None) or (not self.verify_password(password, user.password)):
+        if (user is None) or (not user.active) or (not self.verify_password(password, user.password)):
             return None
         else:
             return user
