@@ -12,5 +12,5 @@ ssh root@68.183.101.22 'docker run -idt -e PORT="3000" -p 3000:3000 --name=books
 ssh root@68.183.101.22 'docker stop api-nginx'
 ssh root@68.183.101.22 'docker rm api-nginx'
 
-ssh root@68.183.101.22 'docker build -t bookstore-nginx ~/bookstore/fastapi-demo/nginx-reverse-proxy'
-ssh root@68.183.101.22 'docker run -idt --name=api-nginx -p 80:80 bookstore-nginx'
+ssh root@68.183.101.22 'docker build -t bookstore-nginx ~/bookstore/fastapi-demo/nginx-https'
+ssh root@68.183.101.22 'docker run -idt --name=api-nginx -p 80:80 -p 443:443 -e DOMAIN=fastapi-demo.martintian.com -e EMAIL=me@martintian.com bookstore-nginx'

@@ -1,0 +1,37 @@
+
+limit_req_zone $binary_remote_addr zone=bookstore:10m rate=5r/m;
+
+server {
+    listen 80;
+
+    server_name fastapi-demo.martintian.com;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+
+}
+
+server {
+    listen 443 ssl;
+    server_name fastapi-demo.martintian.com;
+
+    ssl_certificate /usr/share/nginx/certificates/fullchain.pem;
+    ssl_certificate_key /usr/share/nginx/certificates/privkey.pem;
+    include /etc/ssl-options/options-nginx-ssl.conf;
+    ssl_dhparam /etc/ssl-options/ssl-dhparams.pem;
+
+    location /token {
+        # set rate limit for /token endpoint
+        limit_req zone=bookstore;
+        proxy_pass http://bookstore-lb;
+    }
+
+    location / {
+        proxy_pass http://bookstore-lb;
+    }
+}
